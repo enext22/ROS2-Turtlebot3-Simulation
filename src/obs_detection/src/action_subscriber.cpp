@@ -50,7 +50,7 @@ class ControllerNode : public rclcpp::Node
       { 
         // follow outside of obstacle adjusting angular speed to achieve this
         // safe distance from obstacle is 0.5
-        float setpoint = 0.5;
+        // float setpoint = 0.5;
         // meas is the closest distance to the obstacle
         RCLCPP_INFO(this->get_logger(), "min distance to obstacle: %f", meas);
         RCLCPP_INFO(this->get_logger(), "obstacle is on right side: %d", right);
