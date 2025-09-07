@@ -14,6 +14,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+#find_package(turtlebot3_gazebo REQUIRED)
+#find_package(ros_gz_sim REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -42,7 +44,8 @@ install(TARGETS listener
   DESTINATION lib/${PROJECT_NAME})
 install(TARGETS controller
   DESTINATION lib/${PROJECT_NAME})
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS src/launch/agent_spawn.py DESTINATION lib/${PROJECT_NAME})
+install(DIRECTORY src/launch DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
