@@ -55,9 +55,9 @@ class Sub_Scan(Node):
 		#force = alg.getRobotForces(cur_pos, target_pos, obstacles)
 		
 		#alg.showPlot(obstacles, target_pos)
-		x_coords = np.linspace(-2, 2, 10)
-		y_coords = np.linspace(-2, 2, 10)
-		z = np.zeros((10, 10))
+		x_coords = np.linspace(-2, 2, 20)
+		y_coords = np.linspace(-2, 2, 20)
+		z = np.zeros((20, 20))
 
 		X,Y = np.meshgrid(x_coords, y_coords)
 		#print(X)
