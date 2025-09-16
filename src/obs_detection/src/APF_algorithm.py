@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # Creating a system to generate an Artificial Potential field for path planning
+# Author: Emily Edwards
+# Last Modified: Sep 16, 2025
 
 import math
 import numpy as np

@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+# Author: Emily Edwards
+# Last Modified: Sep 16, 2025
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
