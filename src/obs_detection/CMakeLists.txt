@@ -6,7 +6,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -20,6 +21,9 @@ find_package(tf2_ros REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+ament_python_install_package(src)
+
 
 add_executable(collision_handler src/collision_handler.cpp)
 add_executable(talker src/publish_detection.cpp)
@@ -44,8 +48,17 @@ install(TARGETS listener
   DESTINATION lib/${PROJECT_NAME})
 install(TARGETS controller
   DESTINATION lib/${PROJECT_NAME})
+
 install(PROGRAMS src/launch/agent_spawn.py DESTINATION lib/${PROJECT_NAME})
+install(PROGRAMS src/scanner.py DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY src/launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY src DESTINATION share/${PROJECT_NAME})
+
+install(
+  DIRECTORY src/
+  DESTINATION share/${PROJECT_NAME}
+  PATTERN "*.py"
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -58,5 +71,7 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_dependencies(rclpy)
 
 ament_package()
