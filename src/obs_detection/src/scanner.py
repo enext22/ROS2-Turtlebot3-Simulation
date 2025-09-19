@@ -5,44 +5,49 @@
 
 import rclpy
 from rclpy.node import Node
+
 from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import PoseWithCovariance
+from nav_msgs.msg import Odometry
+
 from rclpy.qos import qos_profile_sensor_data
 import numpy as np
 from src.APF_algorithm import APF
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import math
+import random
 
 
-class Sub_Scan(Node):
+class MultiSubscriber(Node):
 	def __init__(self):
-		super().__init__('scan_subscriber')
-		self.subscription = self.create_subscription(LaserScan, '/scan', self.scan_callback, qos_profile=qos_profile_sensor_data)
+		super().__init__('multi_subscriber')
+		#self.subscription = self.create_subscription(LaserScan, '/scan', self.scan_callback, qos_profile=qos_profile_sensor_data)
+
+		self.subscription = self.create_subscription(Odometry, '/odom', self.pos_callback, 10)
 
 	def scan_callback(self, msg):
 		#self.get_logger().info('Received LaserScan message:')
 		#self.get_logger().info(f' Ranges: {msg.ranges}')
-
 
 		obstacles = []
 		# Calculate obstacle positions
 		for i, range in enumerate(msg.ranges):
 			if range > 4:
 				continue
-			print(f'range: {range}, angle: {np.rad2deg(msg.angle_min + (i * msg.angle_increment))}')
+			self.get_logger().debug(f'range: {range}, angle: {np.rad2deg(msg.angle_min + (i * msg.angle_increment))}')
 			x_pos = range * math.sin(msg.angle_min + (i * msg.angle_increment)) # + xpos of robot
 			y_pos = range * math.cos(msg.angle_min + (i * msg.angle_increment)) # + xpos of robot
 
 			if x_pos == float("inf") or x_pos == float("-inf"):
 				continue
 			obstacles.append([x_pos, y_pos])
-			#print(f"\nOBSTACBLE AT: {obstacles[i]}")
 
-		#print(f'i: {i} vs len(msg.ranges): {len(msg.ranges)}')
+		# reduce the obstacle sample size to reduce spikes in graph
+		obstacles = random.sample(obstacles, int(len(obstacles)*0.30))
 
-		for pos in obstacles:
-			#print(f"X: {pos[0]:.3f}, Y: {pos[1]:.3f}")
-			print(pos)
+		# for pos in obstacles:
+			# print(pos)
 
 		# define a basic target
 		target_pos = np.array([[2, 2]]) # x, y values
@@ -60,14 +65,12 @@ class Sub_Scan(Node):
 		z = np.zeros((20, 20))
 
 		X,Y = np.meshgrid(x_coords, y_coords)
-		#print(X)
-		#print(Y)
 
 		obstacles = np.array(obstacles)
 
 		for i, xval in enumerate(x_coords):
 			for j, yval in enumerate(y_coords):
-				print(f"pos (x,y) = {xval},{yval}")
+				self.get_logger().debug(f"pos (x,y) = {xval},{yval}")
 				pos = np.array([[xval, yval]])
 				force = alg.getRobotForces(pos, target_pos, obstacles)
 				z[i][j] = alg.prev_attractive_potential + alg.prev_repulsive_potential
@@ -79,12 +82,18 @@ class Sub_Scan(Node):
 		plt.show()
 
 		
-	def pos_callback(self, pose):
+	def pos_callback(self, msg):
 		self.get_logger().info('Received update on robot pose')
+
+		x_pos = round(msg.pose.pose.position.x, 1)
+		y_pos = round(msg.pose.pose.position.y, 1)
+		z_pos = round(msg.pose.pose.position.z, 1)
+
+		self.get_logger().info(f'RobotPose: ({x_pos}, {y_pos}, {z_pos})')
 
 def main(args=None):
 	rclpy.init(args=args)
-	subscriber = Sub_Scan()
+	subscriber = MultiSubscriber()
 
 	try:
 		rclpy.spin(subscriber)

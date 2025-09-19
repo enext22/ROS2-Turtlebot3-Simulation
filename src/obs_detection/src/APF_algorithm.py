@@ -35,10 +35,8 @@ class APF():
         # RETRIEVE CURRENT ROBOT POSITION
         # cur_pos = np.array([[self.robot.x, self.robot.y]])
 
-        print(obstacles.shape)
-        print(cur_pos.shape)
-        # list of shortest distances between our robot and each obstacle
-        # rho = cdist(obstacles, cur_pos)
+        #print(obstacles.shape)
+        #print(cur_pos.shape)
 
         potential = 0
         force = 0
@@ -60,7 +58,7 @@ class APF():
                 potential += 0.5 * self.eta * (1/rad - 1/self.rho_0)**2
         """
         self.prev_repulsive_potential = potential
-        print("REPULSIVE_POTENTIAL: ", potential)
+        #print("REPULSIVE_POTENTIAL: ", potential)
 
         force = self.eta * (1/self.rho_0 - 1/rho) * 1/(rho**2) * (cur_pos - obstacles)
 
@@ -71,16 +69,15 @@ class APF():
 
         x_d = tgt_pos
         x = cur_pos
-        print(x_d.shape)
-        print(x.shape)
+        #print(x_d.shape)
+        #print(x.shape)
 
         potential = 0.5 * self.zeta * cdist(x, x_d)**2
         self.prev_attractive_potential = potential
 
-        print('ATTRACTIVE POTENTIAL: ', potential)
+        #print('ATTRACTIVE POTENTIAL: ', potential)
 
         force = self.zeta * cdist(x, x_d)
-        #force_test = np.gradient(potential, )
         
         return force
     
