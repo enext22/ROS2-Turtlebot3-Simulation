@@ -13,8 +13,22 @@ find_package(rclcpp REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+
 ament_python_install_package(src)
 
+add_executable(controller src/controller.cpp)
+ament_target_dependencies(controller rclcpp std_msgs sensor_msgs geometry_msgs nav_msgs tf2 tf2_ros)
+
+
+install(TARGETS controller
+  DESTINATION lib/${PROJECT_NAME})
 
 #install(PROGRAMS
 #  src/my_python_node.py

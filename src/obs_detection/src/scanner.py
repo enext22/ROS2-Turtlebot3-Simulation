@@ -22,9 +22,9 @@ import random
 class MultiSubscriber(Node):
 	def __init__(self):
 		super().__init__('multi_subscriber')
-		#self.subscription = self.create_subscription(LaserScan, '/scan', self.scan_callback, qos_profile=qos_profile_sensor_data)
+		self.subscription = self.create_subscription(LaserScan, '/scan', self.scan_callback, qos_profile=qos_profile_sensor_data)
 
-		self.subscription = self.create_subscription(Odometry, '/odom', self.pos_callback, 10)
+		#self.subscription = self.create_subscription(Odometry, '/odom', self.pos_callback, 10)
 
 	def scan_callback(self, msg):
 		#self.get_logger().info('Received LaserScan message:')
@@ -67,14 +67,27 @@ class MultiSubscriber(Node):
 		X,Y = np.meshgrid(x_coords, y_coords)
 
 		obstacles = np.array(obstacles)
+		forces_x = 0
+		forces_y = 0
 
 		for i, xval in enumerate(x_coords):
 			for j, yval in enumerate(y_coords):
 				self.get_logger().debug(f"pos (x,y) = {xval},{yval}")
 				pos = np.array([[xval, yval]])
-				force = alg.getRobotForces(pos, target_pos, obstacles)
+
+				tmp_force = alg.getRobotForces(pos, target_pos, obstacles)
+				if i == 0 and j == 0: # just record once mimicing robot starting at -2,-2 roughly
+					forces = alg.getRobotForces(pos, target_pos, obstacles)
+
+				print(f'Check attractive potential: {alg.prev_attractive_potential}')
+				print(f'Check repulsive potential: {alg.prev_repulsive_potential}')
+
 				z[i][j] = alg.prev_attractive_potential + alg.prev_repulsive_potential
 
+
+		Field_Direction = forces/ np.abs(forces)
+
+		print(f"\nForce on Robot: {forces}, Direction: {Field_Direction}")
 		fig = plt.figure()
 		ax = plt.axes(projection='3d')
 		ax.plot_surface(X, Y, z, cmap='viridis', edgecolor='green')

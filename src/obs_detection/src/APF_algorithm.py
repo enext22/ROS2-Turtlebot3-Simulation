@@ -48,7 +48,7 @@ class APF():
             rho = cdist(obs, cur_pos)
             if rho <= self.rho_0:
                 potential += 0.5 * self.eta * (1/rho - 1/self.rho_0)**2
-                force += self.eta * (1/self.rho_0 - 1/rho) * 1/(rho**2) * (cur_pos - obs)
+                force += self.eta * (1/self.rho_0 - 1/rho) * 1/(rho**2) * cdist(cur_pos, obs)
         """       
         # calculate repulsive potential
         for i, rad in enumerate(rho):
@@ -58,9 +58,9 @@ class APF():
                 potential += 0.5 * self.eta * (1/rad - 1/self.rho_0)**2
         """
         self.prev_repulsive_potential = potential
-        #print("REPULSIVE_POTENTIAL: ", potential)
 
-        force = self.eta * (1/self.rho_0 - 1/rho) * 1/(rho**2) * (cur_pos - obstacles)
+        #force = self.eta * (1/self.rho_0 - 1/rho) * 1/(rho**2) * (cur_pos - obstacles)
+        print(f'\nREPULSIVE FORCE: {force}')
 
         return force
 
@@ -78,6 +78,7 @@ class APF():
         #print('ATTRACTIVE POTENTIAL: ', potential)
 
         force = self.zeta * cdist(x, x_d)
+        print(f'\nATTRACTIVE FORCE: {force}')
         
         return force
     
