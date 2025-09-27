@@ -30,6 +30,9 @@ ament_target_dependencies(controller rclcpp std_msgs sensor_msgs geometry_msgs n
 install(TARGETS controller
   DESTINATION lib/${PROJECT_NAME})
 
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+
+
 #install(PROGRAMS
 #  src/my_python_node.py
 #  DESTINATION share/${PROJECT_NAME}
