@@ -15,14 +15,16 @@ def generate_launch_description():
         description='Turtlebot3 Description'
     )
     namespace_arg = DeclareLaunchArgument(
-        'namespace',
-        default_value='agent_1',
-        description='Robot Namespace'
+         'namespace',
+         default_value='agent_1',
+         description='Robot Namespace'
     )
 
     # Get package directories
+    gazebo_share_dir = get_package_share_directory('ros_gz_sim')
     turtlebot3_gazebo_share_dir = get_package_share_directory('turtlebot3_gazebo')
     turtlebot3_bringup_share_dir = get_package_share_directory('turtlebot3_bringup')
+    my_pkg_dir = get_package_share_directory('autonomous_control')
 
     # Include the robot state publisher launch file
     robot_state_publisher_launch = IncludeLaunchDescription(
@@ -55,23 +57,16 @@ def generate_launch_description():
     # Include Gazebo world Launch File
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(turtlebot3_gazebo_share_dir, 'launch', 'empty_world.launch.py')
-        )#,
-        #launch_arguments={'namespace': 'turtle1'}.items()
-    )
-    gazebo_launch_with_namespace = GroupAction(
-        actions=[
-            PushROSNamespace('agent1'),
-            gazebo_launch,
-        ]
+            os.path.join(my_pkg_dir, 'launch', 'empty_world.launch.py')#'empty_world.launch.py')
+        )
     )
 
     # Spawn the Turtlebot3 model
     spawn_turtlebot3_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(turtlebot3_gazebo_share_dir, 'launch', 'spawn_turtlebot3.launch.py')
+            os.path.join(my_pkg_dir, 'launch', 'spawn_turtlebot3.launch.py')
         ),
-        launch_arguments={'model': LaunchConfiguration('model'), 'x_pos': '0.0', 'y_pos': '0,0', 'z_pos': '0.0'}.items()
+        launch_arguments={'x_pose': '2.0', 'y_pose': '2.0', 'z_pose': '0.0', 'id': 'Turtle_1'}.items()
     )
     turtlebot3_with_namespace = GroupAction(
         actions=[
@@ -81,9 +76,9 @@ def generate_launch_description():
     )
     spawn_turtlebot3_launch_2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(turtlebot3_gazebo_share_dir, 'launch', 'spawn_turtlebot3.launch.py')
+            os.path.join(my_pkg_dir, 'launch', 'spawn_turtlebot3.launch.py')
         ),
-        launch_arguments={'model': LaunchConfiguration('model'), 'x_pos': '1.0', 'y_pos': '1,0', 'z_pos': '0.0'}.items()
+        launch_arguments={'x_pose': '1.0', 'y_pose': '1.0', 'z_pose': '0.0', 'id': 'Turtle_2'}.items()
     )
     turtlebot3_with_namespace_2 = GroupAction(
         actions=[
